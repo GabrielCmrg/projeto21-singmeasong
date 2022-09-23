@@ -27,7 +27,7 @@ This app was developed by [Driven Education](https://github.com/driven-projects/
 
 ---
 
-## 🏁 Rodando a aplicação
+## 🏁 Running the application
 
 This project was created with [Create React App](https://github.com/facebook/create-react-app), so ensure that you have tha latest stable version of [Node.js](https://nodejs.org/en/download/) and [npm](https://www.npmjs.com/) running locally.
 
