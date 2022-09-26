@@ -104,4 +104,24 @@ describe('Recommendation vote', () => {
       'decrement',
     );
   });
+
+  it('Should delete the recommendation of the score is lesser than -5', async () => {
+    // arrange
+    jest
+      .spyOn(recommendationRepository, 'find')
+      .mockResolvedValue({} as Recommendation);
+    jest
+      .spyOn(recommendationRepository, 'updateScore')
+      .mockResolvedValue({ score: -9 } as Recommendation);
+    jest
+      .spyOn(recommendationRepository, 'remove')
+      .mockImplementation((): any => {});
+    const id = 0;
+
+    // act
+    await recommendationService.downvote(id);
+
+    // assert
+    expect(recommendationRepository.remove).toBeCalled();
+  });
 });
