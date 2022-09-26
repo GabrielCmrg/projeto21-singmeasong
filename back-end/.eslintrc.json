@@ -1,0 +1,23 @@
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint", "prettier"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "prettier",
+    "airbnb-base",
+    "airbnb-typescript/base"
+  ],
+  "parserOptions": {
+    "project": "./back-end/tsconfig.json"
+  },
+  "rules": {
+    "prettier/prettier": ["error", { "trailingComma": "all" }],
+    "no-console": "off",
+    "@typescript-eslint/no-throw-literal": "off",
+    "no-useless-escape": "off",
+    "import/prefer-default-export": "off"
+  }
+}

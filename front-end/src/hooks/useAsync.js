@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 
 export default function useAsync(handler, immediate = true) {
   const [data, setData] = useState(null);
@@ -8,27 +8,27 @@ export default function useAsync(handler, immediate = true) {
   const act = (...args) => {
     setLoading(true);
     setError(null);
-    return handler(...args).then((data) => {
-      setData(data);
-      setLoading(false);
-    }).catch((error) => {
-      setError(error);
-      setLoading(false);
-    });
+    return handler(...args)
+      .then((dataReceived) => {
+        setData(dataReceived);
+        setLoading(false);
+      })
+      .catch((errorReceived) => {
+        setError(errorReceived);
+        setLoading(false);
+      });
   };
 
   useEffect(() => {
     if (immediate) {
       act();
     }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return {
     data,
     loading,
     error,
-    act
+    act,
   };
 }
