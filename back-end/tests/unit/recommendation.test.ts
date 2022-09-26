@@ -158,4 +158,16 @@ describe('Get recommendations', () => {
     // assert
     expect(recommendationRepository.find).toBeCalled();
   });
+
+  it("Should throw if the id doesn't exist", async () => {
+    // arrange
+    jest.spyOn(recommendationRepository, 'find').mockResolvedValue(null);
+    const id = 0;
+
+    // act
+    const promise = recommendationService.getById(id);
+
+    // assert
+    await expect(promise).rejects.toBeTruthy();
+  });
 });
