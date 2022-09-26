@@ -11,6 +11,13 @@
   },
   "plugins": ["react", "prettier"],
   "rules": {
-    "prettier/prettier": ["error", { "trailingComma": "all" }]
+    "prettier/prettier": ["error", { "trailingComma": "all" }],
+    "react/jsx-uses-react": "off",
+    "react/react-in-jsx-scope": "off",
+    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+    "react/jsx-props-no-spreading": "off",
+    "func-names": "off",
+    "no-alert": "off",
+    "react/prop-types": "off"
   }
 }
