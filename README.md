@@ -18,12 +18,13 @@ This app was developed by [Driven Education](https://github.com/driven-projects/
 ## :computer: Technologies and Concepts
 
 - REST APIs
-- JWTs
 - Node.js
 - TypeScript
 - Postgres with prisma
 - Tests with jest and cypress
 - Env variables
+- React with create-react-app
+- Styled components
 
 ---
 
