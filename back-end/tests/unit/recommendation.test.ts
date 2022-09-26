@@ -1,3 +1,5 @@
+import { Prisma, Recommendation } from '@prisma/client';
+
 import {
   recommendationService,
   CreateRecommendationData,
@@ -18,12 +20,28 @@ describe('Recommentation service test suite', () => {
     jest
       .spyOn(recommendationRepository, 'create')
       .mockImplementation((): any => {});
-    const createRecommendationData = {} as CreateRecommendationData;
+    const recommendationData = {} as CreateRecommendationData;
 
     // act
-    await recommendationService.insert(createRecommendationData);
+    await recommendationService.insert(recommendationData);
 
     // assert
     expect(recommendationRepository.findByName).toBeCalled();
+  });
+
+  it('Should throw if recommendation exists', async () => {
+    // arrange
+    jest
+      .spyOn(recommendationRepository, 'findByName')
+      .mockReturnValue(
+        {} as Prisma.Prisma__RecommendationClient<Recommendation>,
+      );
+    const recommendationData = {} as CreateRecommendationData;
+
+    // act
+    const promise = recommendationService.insert(recommendationData);
+
+    // assert
+    await expect(promise).rejects.toBeTruthy();
   });
 });
