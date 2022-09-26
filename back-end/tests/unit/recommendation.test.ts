@@ -173,12 +173,26 @@ describe('Get recommendations', () => {
 
   it("Should throw if there isn't any recommendations", async () => {
     // arrange
-    jest.spyOn(recommendationRepository, 'findAll').mockResolvedValue(null);
+    jest.spyOn(recommendationRepository, 'findAll').mockResolvedValue([]);
 
     // act
     const promise = recommendationService.getRandom();
 
     // assert
     await expect(promise).rejects.toBeTruthy();
+  });
+
+  it("Should search twice if the filter doesn't return any recommendation", async () => {
+    // arrange
+    jest.spyOn(recommendationRepository, 'findAll').mockResolvedValueOnce([]);
+    jest
+      .spyOn(recommendationRepository, 'findAll')
+      .mockResolvedValue([{}] as Recommendation[]);
+
+    // act
+    await recommendationService.getRandom();
+
+    // assert
+    expect(recommendationRepository.findAll).toBeCalledTimes(2);
   });
 });
