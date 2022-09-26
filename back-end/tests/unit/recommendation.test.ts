@@ -170,4 +170,15 @@ describe('Get recommendations', () => {
     // assert
     await expect(promise).rejects.toBeTruthy();
   });
+
+  it("Should throw if there isn't any recommendations", async () => {
+    // arrange
+    jest.spyOn(recommendationRepository, 'findAll').mockResolvedValue(null);
+
+    // act
+    const promise = recommendationService.getRandom();
+
+    // assert
+    await expect(promise).rejects.toBeTruthy();
+  });
 });
