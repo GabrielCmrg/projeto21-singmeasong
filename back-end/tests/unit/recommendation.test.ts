@@ -1,4 +1,4 @@
-import { Prisma, Recommendation } from '@prisma/client';
+import { Recommendation } from '@prisma/client';
 
 import {
   recommendationService,
@@ -6,7 +6,7 @@ import {
 } from '../../src/services/recommendationsService';
 import { recommendationRepository } from '../../src/repositories/recommendationRepository';
 
-describe('Recommentation service test suite', () => {
+describe('Recommentation creation', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.resetAllMocks();
@@ -33,9 +33,7 @@ describe('Recommentation service test suite', () => {
     // arrange
     jest
       .spyOn(recommendationRepository, 'findByName')
-      .mockReturnValue(
-        {} as Prisma.Prisma__RecommendationClient<Recommendation>,
-      );
+      .mockResolvedValue({} as Recommendation);
     const recommendationData = {} as CreateRecommendationData;
 
     // act
@@ -45,9 +43,9 @@ describe('Recommentation service test suite', () => {
     await expect(promise).rejects.toBeTruthy();
   });
 
-  it('Should call the repository to create a recommendation if not exists', async () => {
+  it('Should create a recommendation if not exists', async () => {
     // arrange
-    jest.spyOn(recommendationRepository, 'findByName').mockReturnValue(null);
+    jest.spyOn(recommendationRepository, 'findByName').mockResolvedValue(null);
     jest
       .spyOn(recommendationRepository, 'create')
       .mockImplementation((): any => {});
@@ -58,5 +56,52 @@ describe('Recommentation service test suite', () => {
 
     // assert
     expect(recommendationRepository.create).toBeCalled();
+  });
+});
+
+describe('Recommendation vote', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.resetAllMocks();
+  });
+
+  it('Should increment the score', async () => {
+    // arrange
+    jest
+      .spyOn(recommendationRepository, 'find')
+      .mockResolvedValue({} as Recommendation);
+    jest
+      .spyOn(recommendationRepository, 'updateScore')
+      .mockImplementation((): any => {});
+    const id = 0;
+
+    // act
+    await recommendationService.upvote(id);
+
+    // assert
+    expect(recommendationRepository.updateScore).toBeCalledWith(
+      id,
+      'increment',
+    );
+  });
+
+  it('Should decrement the score', async () => {
+    // arrange
+    jest
+      .spyOn(recommendationRepository, 'find')
+      .mockResolvedValue({} as Recommendation);
+    jest
+      .spyOn(recommendationRepository, 'updateScore')
+      .mockResolvedValue({ score: 0 } as Recommendation);
+    const id = 0;
+
+    // act
+    await recommendationService.downvote(id);
+
+    // assert
+    expect(recommendationRepository.updateScore).toBeCalledWith(
+      id,
+      'decrement',
+    );
   });
 });
