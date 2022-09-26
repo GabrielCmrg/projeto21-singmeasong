@@ -195,4 +195,17 @@ describe('Get recommendations', () => {
     // assert
     expect(recommendationRepository.findAll).toBeCalledTimes(2);
   });
+
+  it('Should search once if the filter return an recommendation', async () => {
+    // arrange
+    jest
+      .spyOn(recommendationRepository, 'findAll')
+      .mockResolvedValue([{}] as Recommendation[]);
+
+    // act
+    await recommendationService.getRandom();
+
+    // assert
+    expect(recommendationRepository.findAll).toBeCalledTimes(1);
+  });
 });
