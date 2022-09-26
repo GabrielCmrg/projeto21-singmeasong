@@ -208,4 +208,19 @@ describe('Get recommendations', () => {
     // assert
     expect(recommendationRepository.findAll).toBeCalledTimes(1);
   });
+
+  it('Should return an array with length equal to amount', async () => {
+    // arrange
+    jest
+      .spyOn(recommendationRepository, 'getAmountByScore')
+      .mockResolvedValue([{}, {}, {}, {}, {}] as Recommendation[]);
+    const AMOUNT = 5;
+
+    // act
+    const recomendations = await recommendationService.getTop(AMOUNT);
+
+    // assert
+    expect(recommendationRepository.getAmountByScore).toBeCalledWith(AMOUNT);
+    expect(recomendations.length).toBe(AMOUNT);
+  });
 });
