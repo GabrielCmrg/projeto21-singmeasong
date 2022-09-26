@@ -44,4 +44,19 @@ describe('Recommentation service test suite', () => {
     // assert
     await expect(promise).rejects.toBeTruthy();
   });
+
+  it('Should call the repository to create a recommendation if not exists', async () => {
+    // arrange
+    jest.spyOn(recommendationRepository, 'findByName').mockReturnValue(null);
+    jest
+      .spyOn(recommendationRepository, 'create')
+      .mockImplementation((): any => {});
+    const recommendationData = {} as CreateRecommendationData;
+
+    // act
+    await recommendationService.insert(recommendationData);
+
+    // assert
+    expect(recommendationRepository.create).toBeCalled();
+  });
 });
