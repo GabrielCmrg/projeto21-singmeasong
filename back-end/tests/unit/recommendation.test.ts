@@ -144,4 +144,18 @@ describe('Get recommendations', () => {
     // assert
     expect(recommendationRepository.findAll).toBeCalled();
   });
+
+  it('Should get an recomendation given an id', async () => {
+    // arrange
+    jest
+      .spyOn(recommendationRepository, 'find')
+      .mockResolvedValue({} as Recommendation);
+    const id = 0;
+
+    // act
+    await recommendationService.getById(id);
+
+    // assert
+    expect(recommendationRepository.find).toBeCalled();
+  });
 });
