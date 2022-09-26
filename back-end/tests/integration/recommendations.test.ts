@@ -1,4 +1,5 @@
 import supertest from 'supertest';
+import Joi from 'joi';
 
 import { prisma } from '../../src/database';
 import app from '../../src/app';
@@ -10,6 +11,7 @@ describe('POST /recommendations', () => {
   });
 
   afterAll(async () => {
+    await prisma.$executeRaw`TRUNCATE TABLE recommendations RESTART IDENTITY`;
     await prisma.$disconnect();
   });
 
@@ -51,6 +53,7 @@ describe('POST /recommendations/:id/upvote', () => {
   });
 
   afterAll(async () => {
+    await prisma.$executeRaw`TRUNCATE TABLE recommendations RESTART IDENTITY`;
     await prisma.$disconnect();
   });
 
@@ -83,6 +86,7 @@ describe('POST /recommendations/:id/downvote', () => {
   });
 
   afterAll(async () => {
+    await prisma.$executeRaw`TRUNCATE TABLE recommendations RESTART IDENTITY`;
     await prisma.$disconnect();
   });
 
@@ -117,5 +121,45 @@ describe('POST /recommendations/:id/downvote', () => {
     const recommendations = await prisma.recommendation.findMany();
     expect(result.status).toBe(200);
     expect(recommendations.length).toBe(0);
+  });
+});
+
+describe('GET /recommendations', () => {
+  beforeAll(async () => {
+    await prisma.$executeRaw`TRUNCATE TABLE recommendations RESTART IDENTITY`;
+    const promises = [];
+    for (let i = 0; i < 11; i += 1) {
+      const recommendation = recommendationFactory.recommendationRequest();
+      const promise = prisma.recommendation.create({ data: recommendation });
+      promises.push(promise);
+    }
+    await Promise.all(promises);
+  });
+
+  afterAll(async () => {
+    await prisma.$executeRaw`TRUNCATE TABLE recommendations RESTART IDENTITY`;
+    await prisma.$disconnect();
+  });
+
+  it('Should get the last 10 recommendations', async () => {
+    const result = await supertest(app).get('/recommendations').send();
+    const recommendationSchema = Joi.object({
+      id: Joi.number().integer().required(),
+      name: Joi.string().required(),
+      youtubeLink: Joi.string().uri().required(),
+      score: Joi.number().integer().required(),
+    });
+    const resultSchema = Joi.array().items(recommendationSchema);
+    const validation = resultSchema.validate(result.body);
+    let ordened = true;
+    result.body.forEach((element, index, array) => {
+      if (index !== 0 && element.id > array[index - 1].id) {
+        ordened = false;
+      }
+    });
+    expect(result.status).toBe(200);
+    expect(validation.error).toBeFalsy();
+    expect(result.body.length).toBe(10);
+    expect(ordened).toBe(true);
   });
 });
