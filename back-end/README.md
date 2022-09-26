@@ -95,3 +95,19 @@ GET /recommendations/top/:amount
 ```
 
 ---
+
+## :test_tube: Running tests
+
+For you to run the tests you will need to run the commands
+
+```
+npm run test:unit
+```
+
+or
+
+```
+npm run test:integration
+```
+
+Depending on the test you want to run.
