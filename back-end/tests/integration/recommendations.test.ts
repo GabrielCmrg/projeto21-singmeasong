@@ -42,3 +42,35 @@ describe('POST /recommendations', () => {
     expect(result.status).toBe(422);
   });
 });
+
+describe('POST /recommendations/:id/upvote', () => {
+  beforeEach(async () => {
+    await prisma.$executeRaw`TRUNCATE TABLE recommendations RESTART IDENTITY`;
+    const recommendation = recommendationFactory.recommendationRequest();
+    await prisma.recommendation.create({ data: recommendation });
+  });
+
+  afterAll(async () => {
+    await prisma.$disconnect();
+  });
+
+  it('Should change the score to 1', async () => {
+    const result = await supertest(app)
+      .post('/recommendations/1/upvote')
+      .send();
+    const recommendations = await prisma.recommendation.findMany();
+    expect(result.status).toBe(200);
+    expect(recommendations.length).toBe(1);
+    expect(recommendations[0].score).toBe(1);
+  });
+
+  it('Should fail for a non-existing id', async () => {
+    const result = await supertest(app)
+      .post('/recommendations/3/upvote')
+      .send();
+    const recommendations = await prisma.recommendation.findMany();
+    expect(result.status).toBe(404);
+    expect(recommendations.length).toBe(1);
+    expect(recommendations[0].score).toBe(0);
+  });
+});
