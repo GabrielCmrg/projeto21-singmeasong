@@ -125,3 +125,23 @@ describe('Recommendation vote', () => {
     expect(recommendationRepository.remove).toBeCalled();
   });
 });
+
+describe('Get recommendations', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.resetAllMocks();
+  });
+
+  it('Should get all recomendations', async () => {
+    // arrange
+    jest
+      .spyOn(recommendationRepository, 'findAll')
+      .mockImplementation((): any => {});
+
+    // act
+    await recommendationService.get();
+
+    // assert
+    expect(recommendationRepository.findAll).toBeCalled();
+  });
+});
