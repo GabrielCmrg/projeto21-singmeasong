@@ -74,3 +74,48 @@ describe('POST /recommendations/:id/upvote', () => {
     expect(recommendations[0].score).toBe(0);
   });
 });
+
+describe('POST /recommendations/:id/downvote', () => {
+  beforeEach(async () => {
+    await prisma.$executeRaw`TRUNCATE TABLE recommendations RESTART IDENTITY`;
+    const recommendation = recommendationFactory.recommendationRequest();
+    await prisma.recommendation.create({ data: recommendation });
+  });
+
+  afterAll(async () => {
+    await prisma.$disconnect();
+  });
+
+  it('Should change the score to -1', async () => {
+    const result = await supertest(app)
+      .post('/recommendations/1/downvote')
+      .send();
+    const recommendations = await prisma.recommendation.findMany();
+    expect(result.status).toBe(200);
+    expect(recommendations.length).toBe(1);
+    expect(recommendations[0].score).toBe(-1);
+  });
+
+  it('Should fail for a non-existing id', async () => {
+    const result = await supertest(app)
+      .post('/recommendations/3/downvote')
+      .send();
+    const recommendations = await prisma.recommendation.findMany();
+    expect(result.status).toBe(404);
+    expect(recommendations.length).toBe(1);
+    expect(recommendations[0].score).toBe(0);
+  });
+
+  it('Should delete the recommendation if the score droops to -5', async () => {
+    await prisma.recommendation.update({
+      where: { id: 1 },
+      data: { score: -5 },
+    });
+    const result = await supertest(app)
+      .post('/recommendations/1/downvote')
+      .send();
+    const recommendations = await prisma.recommendation.findMany();
+    expect(result.status).toBe(200);
+    expect(recommendations.length).toBe(0);
+  });
+});
