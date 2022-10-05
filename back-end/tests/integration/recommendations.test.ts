@@ -188,4 +188,17 @@ describe('GET /recommendations/:id', () => {
     expect(result.status).toBe(200);
     expect(validation.error).toBeFalsy();
   });
+
+  it("Should fail if the recommendation id doesn't exist", async () => {
+    const result = await supertest(app).get('/recommendations/3').send();
+    const resultSchema = Joi.object({
+      id: Joi.number().integer().required(),
+      name: Joi.string().required(),
+      youtubeLink: Joi.string().uri().required(),
+      score: Joi.number().integer().required(),
+    });
+    const validation = resultSchema.validate(result.body);
+    expect(result.status).toBe(200);
+    expect(validation.error).toBeFalsy();
+  });
 });
