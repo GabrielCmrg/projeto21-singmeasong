@@ -110,7 +110,7 @@ describe('POST /recommendations/:id/downvote', () => {
     expect(recommendations[0].score).toBe(0);
   });
 
-  it('Should delete the recommendation if the score droops to -5', async () => {
+  it('Should delete the recommendation if the score drops to -5', async () => {
     await prisma.recommendation.update({
       where: { id: 1 },
       data: { score: -5 },
@@ -160,6 +160,114 @@ describe('GET /recommendations', () => {
     expect(result.status).toBe(200);
     expect(validation.error).toBeFalsy();
     expect(result.body.length).toBe(10);
+    expect(ordened).toBe(true);
+  });
+});
+
+describe('GET /recommendations/:id', () => {
+  beforeAll(async () => {
+    await prisma.$executeRaw`TRUNCATE TABLE recommendations RESTART IDENTITY`;
+    const recommendation = recommendationFactory.recommendationRequest();
+    await prisma.recommendation.create({ data: recommendation });
+  });
+
+  afterAll(async () => {
+    await prisma.$executeRaw`TRUNCATE TABLE recommendations RESTART IDENTITY`;
+    await prisma.$disconnect();
+  });
+
+  it('Should get a recommendation given id', async () => {
+    const result = await supertest(app).get('/recommendations/1').send();
+    const resultSchema = Joi.object({
+      id: Joi.number().integer().required(),
+      name: Joi.string().required(),
+      youtubeLink: Joi.string().uri().required(),
+      score: Joi.number().integer().required(),
+    });
+    const validation = resultSchema.validate(result.body);
+    expect(result.status).toBe(200);
+    expect(validation.error).toBeFalsy();
+  });
+
+  it("Should fail if the recommendation id doesn't exist", async () => {
+    const result = await supertest(app).get('/recommendations/3').send();
+    expect(result.status).toBe(404);
+  });
+});
+
+describe('GET /recommendations/random', () => {
+  beforeAll(async () => {
+    await prisma.$executeRaw`TRUNCATE TABLE recommendations RESTART IDENTITY`;
+    const promises = [];
+    for (let i = 0; i < 3; i += 1) {
+      const recommendation = recommendationFactory.recommendationRequest();
+      const promise = prisma.recommendation.create({ data: recommendation });
+      promises.push(promise);
+    }
+    await Promise.all(promises);
+  });
+
+  afterAll(async () => {
+    await prisma.$executeRaw`TRUNCATE TABLE recommendations RESTART IDENTITY`;
+    await prisma.$disconnect();
+  });
+
+  it('Should get a random recommendation', async () => {
+    const result = await supertest(app).get('/recommendations/random').send();
+    const resultSchema = Joi.object({
+      id: Joi.number().integer().required(),
+      name: Joi.string().required(),
+      youtubeLink: Joi.string().uri().required(),
+      score: Joi.number().integer().required(),
+    });
+    const validation = resultSchema.validate(result.body);
+    expect(result.status).toBe(200);
+    expect(validation.error).toBeFalsy();
+  });
+
+  it('Should fail if there is no recommendation', async () => {
+    await prisma.$executeRaw`TRUNCATE TABLE recommendations RESTART IDENTITY`;
+    const result = await supertest(app).get('/recommendations/random').send();
+    expect(result.status).toBe(404);
+  });
+});
+
+describe('GET /recommendations/top/:amount', () => {
+  beforeAll(async () => {
+    await prisma.$executeRaw`TRUNCATE TABLE recommendations RESTART IDENTITY`;
+    const promises = [];
+    for (let i = 0; i < 4; i += 1) {
+      const recommendation = recommendationFactory.recommendationRequest();
+      const promise = prisma.recommendation.create({ data: recommendation });
+      promises.push(promise);
+    }
+    await Promise.all(promises);
+  });
+
+  afterAll(async () => {
+    await prisma.$executeRaw`TRUNCATE TABLE recommendations RESTART IDENTITY`;
+    await prisma.$disconnect();
+  });
+
+  it('Should get the top 3 recommendations', async () => {
+    const result = await supertest(app).get('/recommendations/top/3').send();
+    const recommendationSchema = Joi.object({
+      id: Joi.number().integer().required(),
+      name: Joi.string().required(),
+      youtubeLink: Joi.string().uri().required(),
+      score: Joi.number().integer().required(),
+    });
+    const resultSchema = Joi.array().items(recommendationSchema);
+    const validation = resultSchema.validate(result.body);
+    let ordened = true;
+    result.body.forEach((element, index, array) => {
+      if (index !== 0 && element.score > array[index - 1].id) {
+        ordened = false;
+      }
+    });
+    expect(result.status).toBe(200);
+    expect(validation.error).toBeFalsy();
+    expect(result.body.length).toBe(3);
     expect(ordened).toBe(true);
   });
 });
