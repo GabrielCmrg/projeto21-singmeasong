@@ -14,7 +14,7 @@ recommendationRouter.post('/:id/upvote', recommendationController.upvote);
 recommendationRouter.post('/:id/downvote', recommendationController.downvote);
 
 if (env === 'test') {
-  recommendationRouter.delete('/recommendations', async (req, res) => {
+  recommendationRouter.delete('/', async (req, res) => {
     await prisma.$executeRaw`TRUNCATE TABLE recommendations RESTART IDENTITY`;
     return res.sendStatus(200);
   });
