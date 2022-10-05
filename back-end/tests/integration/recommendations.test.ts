@@ -110,7 +110,7 @@ describe('POST /recommendations/:id/downvote', () => {
     expect(recommendations[0].score).toBe(0);
   });
 
-  it('Should delete the recommendation if the score droops to -5', async () => {
+  it('Should delete the recommendation if the score drops to -5', async () => {
     await prisma.recommendation.update({
       where: { id: 1 },
       data: { score: -5 },
