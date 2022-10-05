@@ -1,3 +1,5 @@
+import { faker } from '@faker-js/faker';
+
 // ***********************************************
 // This example commands.js shows you how to
 // create various custom commands and overwrite
@@ -8,6 +10,17 @@
 // https://on.cypress.io/custom-commands
 // ***********************************************
 //
+Cypress.Commands.add('postRecommendation', () => {
+  const NAME_SIZE = 3;
+  const CODE_SIZE = 8;
+  const post = {
+    name: faker.lorem.words(NAME_SIZE),
+    youtubeLink: `https://www.youtube.com/watch?v=${faker.random.alphaNumeric(
+      CODE_SIZE,
+    )}`,
+  };
+  cy.request('POST', 'http://localhost:5000/recommendations', post);
+});
 //
 // -- This is a parent command --
 // Cypress.Commands.add('login', (email, password) => { ... })
