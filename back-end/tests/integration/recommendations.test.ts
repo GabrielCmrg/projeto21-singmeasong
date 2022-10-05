@@ -224,4 +224,10 @@ describe('GET /recommendations/random', () => {
     expect(result.status).toBe(200);
     expect(validation.error).toBeFalsy();
   });
+
+  it('Should fail if there is no recommendation', async () => {
+    await prisma.$executeRaw`TRUNCATE TABLE recommendations RESTART IDENTITY`;
+    const result = await supertest(app).get('/recommendations/random').send();
+    expect(result.status).toBe(404);
+  });
 });
