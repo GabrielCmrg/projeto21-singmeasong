@@ -27,6 +27,7 @@ export default function CreateNewRecommendation({
         value={name}
         onChange={(e) => setName(e.target.value)}
         disabled={disabled}
+        data-cy="recomendation-name"
       />
       <Input
         type="text"
@@ -34,8 +35,13 @@ export default function CreateNewRecommendation({
         value={link}
         onChange={(e) => setLink(e.target.value)}
         disabled={disabled}
+        data-cy="youtube-link"
       />
-      <Button onClick={() => handleCreateRecommendation()} disabled={disabled}>
+      <Button
+        onClick={() => handleCreateRecommendation()}
+        disabled={disabled}
+        data-cy="post-button"
+      >
         <IoReturnUpForwardOutline size="24px" color="#fff" />
       </Button>
     </Container>
