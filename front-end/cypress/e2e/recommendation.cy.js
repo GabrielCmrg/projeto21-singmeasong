@@ -48,4 +48,14 @@ describe('recommendation manipulation', () => {
     cy.wait('@downvote');
     cy.get('[data-cy="votes"]').should('have.text', -1);
   });
+
+  it('should delete if downvote below 5', () => {
+    for (let i = 0; i < 5; i += 1) {
+      cy.downvote(1);
+    }
+    cy.intercept('POST', '/recommendations/1/downvote').as('downvote');
+    cy.get('[data-cy="downvote-button"]').click();
+    cy.wait('@downvote');
+    cy.get('article').should('not.exist');
+  });
 });
