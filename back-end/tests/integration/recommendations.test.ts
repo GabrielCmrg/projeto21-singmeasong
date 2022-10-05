@@ -32,7 +32,9 @@ describe('POST /recommendations', () => {
     const result = await supertest(app)
       .post('/recommendations')
       .send(recommendation);
+    const recommendations = await prisma.recommendation.findMany();
     expect(result.status).toBe(422);
+    expect(recommendations.length).toBe(0);
   });
 
   it("Should fail if the url isn't from youtube", async () => {
@@ -41,7 +43,9 @@ describe('POST /recommendations', () => {
     const result = await supertest(app)
       .post('/recommendations')
       .send(recommendation);
+    const recommendations = await prisma.recommendation.findMany();
     expect(result.status).toBe(422);
+    expect(recommendations.length).toBe(0);
   });
 });
 
