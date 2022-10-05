@@ -72,4 +72,9 @@ describe('recommendation gets', () => {
     cy.visit('http://localhost:3000');
     cy.get('article').should('exist');
   });
+
+  it('should return a list of recommendations ordened by vote', () => {
+    cy.visit('http://localhost:3000/top');
+    cy.get('[data-cy="votes"]').should('have.length', 10);
+  });
 });
