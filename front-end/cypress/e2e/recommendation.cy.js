@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 
-describe('recommendation manipulation', () => {
+describe('recommendation creation', () => {
   beforeEach(() => {
     cy.request('DELETE', 'http://localhost:5000/recommendations');
   });
@@ -27,8 +27,12 @@ describe('recommendation manipulation', () => {
       post.name,
     );
   });
+});
 
-  it('should upvote', () => {
+describe('recommendation manitpulation', () => {
+  beforeEach(() => {
+    cy.request('DELETE', 'http://localhost:5000/recommendations');
+
     const NAME_SIZE = 3;
     const CODE_SIZE = 8;
     const post = {
@@ -44,10 +48,19 @@ describe('recommendation manipulation', () => {
     cy.intercept('POST', '/recommendations').as('recomendationPostRequest');
     cy.get('[data-cy="post-button"]').click();
     cy.wait('@recomendationPostRequest');
+  });
 
+  it('should upvote', () => {
     cy.intercept('POST', '/recommendations/1/upvote').as('upvote');
     cy.get('[data-cy="upvote-button"]').click();
     cy.wait('@upvote');
     cy.get('[data-cy="votes"]').should('have.text', 1);
+  });
+
+  it('should downvote', () => {
+    cy.intercept('POST', '/recommendations/1/downvote').as('downvote');
+    cy.get('[data-cy="downvote-button"]').click();
+    cy.wait('@downvote');
+    cy.get('[data-cy="votes"]').should('have.text', -1);
   });
 });
