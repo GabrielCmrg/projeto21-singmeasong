@@ -68,3 +68,25 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+## Running tests
+
+You can run the e2e tests by running on the backend folder:
+
+```
+npm run test:e2e
+```
+
+And the, on front-end run:
+
+```
+npm start
+```
+
+Finally, you will need to run:
+
+```
+npx cypress open
+```
+
+And interact with the GUI. Select e2e testing, start e2e testing after selecting your browser or electron, go to specs and click the recommendations. The tests will then run.
