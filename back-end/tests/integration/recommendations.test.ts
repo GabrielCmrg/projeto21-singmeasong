@@ -231,3 +231,43 @@ describe('GET /recommendations/random', () => {
     expect(result.status).toBe(404);
   });
 });
+
+describe('GET /recommendations/top/:amount', () => {
+  beforeAll(async () => {
+    await prisma.$executeRaw`TRUNCATE TABLE recommendations RESTART IDENTITY`;
+    const promises = [];
+    for (let i = 0; i < 4; i += 1) {
+      const recommendation = recommendationFactory.recommendationRequest();
+      const promise = prisma.recommendation.create({ data: recommendation });
+      promises.push(promise);
+    }
+    await Promise.all(promises);
+  });
+
+  afterAll(async () => {
+    await prisma.$executeRaw`TRUNCATE TABLE recommendations RESTART IDENTITY`;
+    await prisma.$disconnect();
+  });
+
+  it('Should get the top 3 recommendations', async () => {
+    const result = await supertest(app).get('/recommendations/top/3').send();
+    const recommendationSchema = Joi.object({
+      id: Joi.number().integer().required(),
+      name: Joi.string().required(),
+      youtubeLink: Joi.string().uri().required(),
+      score: Joi.number().integer().required(),
+    });
+    const resultSchema = Joi.array().items(recommendationSchema);
+    const validation = resultSchema.validate(result.body);
+    let ordened = true;
+    result.body.forEach((element, index, array) => {
+      if (index !== 0 && element.score > array[index - 1].id) {
+        ordened = false;
+      }
+    });
+    expect(result.status).toBe(200);
+    expect(validation.error).toBeFalsy();
+    expect(result.body.length).toBe(3);
+    expect(ordened).toBe(true);
+  });
+});
