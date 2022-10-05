@@ -77,4 +77,9 @@ describe('recommendation gets', () => {
     cy.visit('http://localhost:3000/top');
     cy.get('[data-cy="votes"]').should('have.length', 10);
   });
+
+  it('should return a random recommendation', () => {
+    cy.visit('http://localhost:3000/random');
+    cy.get('article').should('exist').should('have.length', 1);
+  });
 });
