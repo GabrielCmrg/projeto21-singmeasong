@@ -194,3 +194,34 @@ describe('GET /recommendations/:id', () => {
     expect(result.status).toBe(404);
   });
 });
+
+describe('GET /recommendations/random', () => {
+  beforeAll(async () => {
+    await prisma.$executeRaw`TRUNCATE TABLE recommendations RESTART IDENTITY`;
+    const promises = [];
+    for (let i = 0; i < 3; i += 1) {
+      const recommendation = recommendationFactory.recommendationRequest();
+      const promise = prisma.recommendation.create({ data: recommendation });
+      promises.push(promise);
+    }
+    await Promise.all(promises);
+  });
+
+  afterAll(async () => {
+    await prisma.$executeRaw`TRUNCATE TABLE recommendations RESTART IDENTITY`;
+    await prisma.$disconnect();
+  });
+
+  it('Should get a random recommendation', async () => {
+    const result = await supertest(app).get('/recommendations/random').send();
+    const resultSchema = Joi.object({
+      id: Joi.number().integer().required(),
+      name: Joi.string().required(),
+      youtubeLink: Joi.string().uri().required(),
+      score: Joi.number().integer().required(),
+    });
+    const validation = resultSchema.validate(result.body);
+    expect(result.status).toBe(200);
+    expect(validation.error).toBeFalsy();
+  });
+});
