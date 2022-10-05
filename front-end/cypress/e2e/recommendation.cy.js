@@ -29,7 +29,7 @@ describe('recommendation creation', () => {
   });
 });
 
-describe('recommendation manitpulation', () => {
+describe('recommendation manipulation', () => {
   beforeEach(() => {
     cy.request('DELETE', 'http://localhost:5000/recommendations');
 
