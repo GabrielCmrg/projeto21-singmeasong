@@ -110,4 +110,10 @@ or
 npm run test:integration
 ```
 
-Depending on the test you want to run.
+or
+
+```
+npm run test:e2e
+```
+
+Depending on the test you want to run. The e2e test is just to start the app, you will need to use cypress on front-end to do the actual e2e test.
