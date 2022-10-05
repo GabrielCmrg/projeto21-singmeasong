@@ -21,6 +21,10 @@ Cypress.Commands.add('postRecommendation', () => {
   };
   cy.request('POST', 'http://localhost:5000/recommendations', post);
 });
+
+Cypress.Commands.add('downvote', (id) => {
+  cy.request('POST', `http://localhost:5000/recommendations/${id}/downvote`);
+});
 //
 // -- This is a parent command --
 // Cypress.Commands.add('login', (email, password) => { ... })
