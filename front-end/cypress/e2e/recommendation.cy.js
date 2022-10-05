@@ -27,4 +27,27 @@ describe('recommendation manipulation', () => {
       post.name,
     );
   });
+
+  it('should upvote', () => {
+    const NAME_SIZE = 3;
+    const CODE_SIZE = 8;
+    const post = {
+      name: faker.lorem.words(NAME_SIZE),
+      youtubeLink: `https://www.youtube.com/watch?v=${faker.random.alphaNumeric(
+        CODE_SIZE,
+      )}`,
+    };
+    cy.visit('http://localhost:3000');
+
+    cy.get('[data-cy="recomendation-name"]').type(post.name);
+    cy.get('[data-cy="youtube-link"]').type(post.youtubeLink);
+    cy.intercept('POST', '/recommendations').as('recomendationPostRequest');
+    cy.get('[data-cy="post-button"]').click();
+    cy.wait('@recomendationPostRequest');
+
+    cy.intercept('POST', '/recommendations/1/upvote').as('upvote');
+    cy.get('[data-cy="upvote-button"]').click();
+    cy.wait('@upvote');
+    cy.get('[data-cy="votes"]').should('have.text', 1);
+  });
 });
