@@ -8,7 +8,8 @@
     "dev": "nodemon src/server.ts",
     "test:unit": "jest -i --coverage --testPathPattern=tests/unit",
     "prisma:migrate-test": "dotenv -e .env.test prisma migrate dev",
-    "test:integration": "npm run prisma:migrate-test && dotenv -e .env.test jest -- -i --testPathPattern=tests/integration"
+    "test:integration": "npm run prisma:migrate-test && dotenv -e .env.test jest -- -i --testPathPattern=tests/integration",
+    "test:e2e": "START_MODE=test npm run dev"
   },
   "keywords": [],
   "author": "",
