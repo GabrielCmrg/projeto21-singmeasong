@@ -59,3 +59,17 @@ describe('recommendation manipulation', () => {
     cy.get('article').should('not.exist');
   });
 });
+
+describe('recommendation gets', () => {
+  beforeEach(() => {
+    cy.request('DELETE', 'http://localhost:5000/recommendations');
+    for (let i = 0; i < 11; i += 1) {
+      cy.postRecommendation();
+    }
+  });
+
+  it('should return a list of recommendations', () => {
+    cy.visit('http://localhost:3000');
+    cy.get('article').should('exist');
+  });
+});
